@@ -34,12 +34,16 @@ pub type Var = String;
 #[derive(Clone)]
 pub enum Value {
     Int(u8),
+    True,
+    False,
 }
 
 impl fmt::Debug for Value {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Value::Int(n) => write!(f, "{}", n),
+            Value::True => write!(f, "TRUE"),
+            Value::False => write!(f, "FALSE"),
         }
     }
 }
@@ -57,6 +61,24 @@ impl ToDoc for Triv {
             Triv::Value(n) => RcDoc::text(format!("{:?}", n)),
             Triv::Var(x) => RcDoc::text(x),
             Triv::Return => RcDoc::text("%ret"),
+        }
+    }
+}
+
+pub enum Loc {
+    Memory(u8),
+    A,
+    B,
+    X,
+}
+
+impl ToDoc for Loc {
+    fn to_doc(&self) -> RcDoc<()> {
+        match self {
+            Loc::Memory(n) => RcDoc::text(format!("@{:?}", n)),
+            Loc::A => RcDoc::text("%a"),
+            Loc::B => RcDoc::text("%b"),
+            Loc::X => RcDoc::text("%x"),
         }
     }
 }

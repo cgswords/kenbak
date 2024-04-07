@@ -47,27 +47,6 @@ impl Pass {
         Box::new(self.tail(*e))
     }
 
-    fn value(&mut self, block: &mut Vec<ast::Stmt>, e: input::Exp) -> Triv {
-        match e {
-            input::Exp::Call(target, args) => {
-                // We put them on the stack backwards for our sanity.
-                for arg in args.into_iter().rev() {
-                    block.push(ast::Stmt::Push(arg));
-                }
-                block.push(ast::Stmt::Exp(Box::new(ast::Exp::Call(target))));
-                Triv::Return
-            }
-            input::Exp::Seq(stmts, e) => {
-                for stmt in stmts {
-                    self.stmt(block, stmt);
-                }
-                self.value(block, *e)
-            }
-            input::Exp::If(_test, _conseq, _alt) => todo!(),
-            input::Exp::Triv(t) => t,
-        }
-    }
-
     fn  stmt_block(&mut self, block: Vec<input::Stmt>) -> Vec<ast::Stmt> {
         let mut output_block = vec![];
         for stmt  in block {
@@ -82,8 +61,8 @@ impl Pass {
             input::Stmt::Let(x, rhs) => {
                 block.push(ast::Stmt::Let(x, rhs));
             }
-            input::Stmt::LetBinop(x, lhs, op, rhs) => {
-                block.push(ast::Stmt::LetBinop(x, lhs, op, rhs))
+            input::Stmt::LetBinop(x, op, rhs) => {
+                block.push(ast::Stmt::LetBinop(x, op, rhs))
             }
             input::Stmt::LetCall(x, subject, args) => {
                 push_args(block, args);

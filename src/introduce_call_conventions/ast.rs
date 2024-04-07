@@ -16,7 +16,7 @@ pub enum Exp {
 #[derive(Debug, Clone)]
 pub enum Stmt {
     Exp(Box<Exp>),
-    LetBinop(Var, Triv, Op, Triv),
+    LetBinop(Var, Op, Triv),
     Let(Var, Triv),
     If(Triv, Vec<Stmt>, Vec<Stmt>),
     Call(Triv),
@@ -54,9 +54,9 @@ impl ToDoc for Stmt {
     fn to_doc(&self) -> RcDoc<()> {
         match self {
             Stmt::Exp(e) => e.to_doc(),
-            Stmt::LetBinop(x, lhs, op, rhs) => {
+            Stmt::LetBinop(x, op, rhs) => {
                 let binop = RcDoc::intersperse(
-                    [RcDoc::text(format!("{:?}", op)), lhs.to_doc(), rhs.to_doc()],
+                    [RcDoc::text(format!("{:?}", op)), RcDoc::text(x), rhs.to_doc()],
                     Doc::line(),
                 )
                 .group();
